@@ -28,7 +28,7 @@ else      %odd
   f= -(0.5*fs-0.5*df) :df: (0.5*fs-0.5*df);     %frequency vector if N is odd
 end
 % Fourier transform
-X_FT=fftshift(fft(x))*ts;    % multiblied by ts as the signal is non-periodic
+X_FT=fftshift(fft(x))*ts;    % multiplied by ts as the signal is non-periodic
 % analytical expression
 X_analytical = 3 .* sinc(f) .* sinc(3 * f);
 figure 2
