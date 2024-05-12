@@ -1,7 +1,14 @@
-% LPF with BW=1Hz :
+% Band width (BW):
+P_max = max(abs(X_FT));
+threshold = 0.05*P_max;
+index = find(abs(X_FT).^2 > threshold, 1, 'last');
+BW = f(index);
+
+
+% LPF with BW=1Hz:
 %H = abs(f) < 2;
 H = zeros(size(f));
-H(f>-1.2 & f<1.2)=1;
+H(f > -1.2 & f < 1.2) = 1;
 figure(3)
 plot(f,abs(H),"LineWidth",3)
 ylim([0, 2])
@@ -10,7 +17,7 @@ xlabel('f')
 ylabel('|H(f)|')
 
 % After LPF:
-x_received = (ifft(ifftshift(H.*X_FT)/ts));
+x_received = (ifft(ifftshift(H.*X_FT) / ts));
 figure(4)
 plot(t,x_received,"LineWidth",3)
 hold on
@@ -21,10 +28,10 @@ legend('Received message','Transmitted message')
 xlabel('t')
 ylabel('x(t)')
 
-% LPF with BW=0.3Hz :
+% LPF with BW=0.3Hz:
 %H = abs(f) < 0.3;
 H = zeros(size(f));
-H(f>-0.6 & f<0.6)=1;
+H(f > -0.6 & f < 0.6) = 1;
 figure(5)
 plot(f,abs(H),"LineWidth",3)
 ylim([0, 2])
@@ -33,7 +40,7 @@ xlabel('f')
 ylabel('|H(f)|')
 
 % After LPF:
-x_received = (ifft(ifftshift(H.*X_FT)/ts));
+x_received = (ifft(ifftshift(H.*X_FT) / ts));
 figure(6)
 plot(t,x_received,"LineWidth",3)
 hold on
