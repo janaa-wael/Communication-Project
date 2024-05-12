@@ -1,5 +1,4 @@
 bit_no =64;
-stream=[];
 stream = randi([0, 1], 1, bit_no);
 
     % Define time axis
