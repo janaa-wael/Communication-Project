@@ -1,24 +1,22 @@
 bit_no =64;
 stream = randi([0, 1], 1, bit_no);
 bitrate=1;
-
+fc = 3 ;
+duration = 64;
+Fs = 100; %sampling frequence
+ts = 1/Fs ;
 %signal after applying linecoding:
-t = 0:0.01:(10*length(stream)-1);
+t = linspace(0, duration, duration * Fs);     %time vector
 signal = unrz(stream,t);
 
-fc=10
-c=sin(2*pi*fc*t);
-
-m=signal.*c;
-figure;
-plot(t,signal)
-figure ;
-plot(t,c)
 %%%%%%%%%%%%%% modulation %%%%%%%%%%%%%%%%%%%%%%%%
+carrier_signal=cos(2*pi*fc*t);
+ASK_signal=signal.*carrier_signal;
+
 
 %temporal plot of ask modulated stream:
     figure;
-    plot(t, m, 'b', 'LineWidth', 1.5);
+    plot(t, ASK_signal, 'b', 'LineWidth', 1.5);
     title('ASK modulated stream');
     xlabel('Time');
     ylabel('Signal Amplitude');
@@ -26,10 +24,9 @@ plot(t,c)
     grid on;
 
 %spectral plots of ask modulated signal:
-    Fs = 100;%sampling frequence
     figure;
-    L = length(m);
-    Y = fftshift(fft(m))*1/Fs;
+    L = length(ASK_signal);
+    Y = fftshift(fft(ASK_signal))*1/Fs;
     N = L;
     df = Fs/N;
     if(rem(N,2)==0) %% Even
@@ -42,16 +39,41 @@ plot(t,c)
       xlabel('Frequency (Hz)');
       ylabel('Amplitude');
 
+%%%%%%%%%transmission through noisy channel %%%%%%%%%%%%%%%%%%
+
+
+snr_db = 20; % Signal to noise ratio (dB)
+noisePower = 10^(-snr_db / 10);
+noise = sqrt(noisePower) * randn(size(ASK_signal));
+received_signal = ASK_signal + noise;
+
 %%%%%%%%%%%%%% demodulation %%%%%%%%%%%%%%%%%%%%%%%%
 phases =[30,60,90];
 
-for i=1:length(phases)
-  local_oscillator=sin(2*pi*t*fc+deg2rad(phases(i)));
-  demod_signal= m.*local_oscillator;
+for j=1:length(phases)
+  local_oscillator=sin(2*pi*t*fc+deg2rad(phases(j)));
+  demodulated_signal= received_signal.*local_oscillator;
+
+  %quantising recieved signal :
+
+Vth = 0.5;
+region = length(t) /Fs;
+receiver_output = zeros(1, region);
+for i = 1:region
+    regionStart = (i - 1) * 100 + 1;
+    regionEnd = i * 100;
+    region = demodulated_signal(regionStart:regionEnd);
+    if any(region > Vth)
+        receiver_output(regionStart:regionEnd) = 1;
+    else
+        receiver_output(regionStart:regionEnd) = 0;
+    endif
+endfor
+
   %temporal plot of ask demodulated stream:
     figure;
-    plot(t, demod_signal, 'b', 'LineWidth', 1.5);
-    title(sprintf('ASK demodulated stream with oscillator phase %d',phases(i)));
+    plot(t, receiver_output, 'b', 'LineWidth', 1.5);
+    title(sprintf('ASK demodulated stream with oscillator phase %d',phases(j)));
     xlabel('Time');
     ylabel('Signal Amplitude');
     %ylim([-0.5, 1.5]);
@@ -59,8 +81,8 @@ for i=1:length(phases)
 
   %spectral plots of ask modulated signal:
     figure;
-    L = length(m);
-    Y = fftshift(fft(m))*1/Fs;
+    L = length(receiver_output);
+    Y = fftshift(fft(receiver_output))*1/Fs;
     N = L;
     df = Fs/N;
     if(rem(N,2)==0) %% Even
@@ -69,7 +91,7 @@ for i=1:length(phases)
       f = - (0.5*Fs-0.5*df) : df : (0.5*Fs-0.5*df) ; %% Frequency vector if x/f is odd
     end
       plot(f, abs(Y), 'LineWidth', 1.5);
-       title(sprintf('Frequency Spectrum of ASK demodulated stream with oscillator phase %d',phases(i)));
+       title(sprintf('Frequency Spectrum of ASK demodulated stream with oscillator phase %d',phases(j)));
       xlabel('Frequency (Hz)');
       ylabel('Amplitude');
 
