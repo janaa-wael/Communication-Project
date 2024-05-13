@@ -73,7 +73,7 @@ endfor
   %temporal plot of ask demodulated stream:
     figure;
     plot(t, receiver_output, 'b', 'LineWidth', 1.5);
-    title(sprintf('ASK demodulated stream with oscillator phase %d',phases(j)));
+    title(sprintf('ASK demodulated stream with oscillator phase %d°',phases(j)));
     xlabel('Time');
     ylabel('Signal Amplitude');
     %ylim([-0.5, 1.5]);
@@ -91,7 +91,7 @@ endfor
       f = - (0.5*Fs-0.5*df) : df : (0.5*Fs-0.5*df) ; %% Frequency vector if x/f is odd
     end
       plot(f, abs(Y), 'LineWidth', 1.5);
-       title(sprintf('Frequency Spectrum of ASK demodulated stream with oscillator phase %d',phases(j)));
+       title(sprintf('Frequency Spectrum of ASK demodulated stream with oscillator phase %d°',phases(j)));
       xlabel('Frequency (Hz)');
       ylabel('Amplitude');
 
