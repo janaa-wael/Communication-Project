@@ -3,7 +3,7 @@ v_high=1.2;
 stream = randi([0, 1], 1, bit_no);
 bitrate=100;
 bit_dur=1/bitrate;
-Fs=5*bitrate; %sampling frequency
+Fs=10*bitrate; %sampling frequency
 ts=1/Fs;
 
 fc = 10*bitrate ; %carrier frequency
