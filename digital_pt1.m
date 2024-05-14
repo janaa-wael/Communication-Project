@@ -1,4 +1,5 @@
 bit_no =64;
+v_high=1.2;
 stream=[];
 stream = randi([0, 1], 1, bit_no);
 
@@ -6,7 +7,7 @@ stream = randi([0, 1], 1, bit_no);
     t = 0:1:(100*length(stream)-1);
     bit_duration = 1;
     %Apply the manchester line coding :
-    encoded_signal=manchester(stream,25)
+    encoded_signal=manchester(stream,25,v_high)
 
 
     % Plot the Manchester encoded signal
@@ -18,7 +19,7 @@ stream = randi([0, 1], 1, bit_no);
     ylim([-1.5, 1.5]); % Set y-axis limit for better visualization
     grid on;
     %applying the unipolar NRZ line coding:
-    signal =unrz(stream,t);
+    signal =unrz(stream,t,v_high);
 
     figure;
 % Plot the unipolar NRZ encoded signal
